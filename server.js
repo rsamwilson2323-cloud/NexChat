@@ -10,7 +10,7 @@
 //  ██                                                      ██
 //  ██████████████████████████████████████████████████████████
 
-const NGROK_AUTHTOKEN = "3DLXyTtG8ury4yHMgR4VYIIg2sE_o7b5njh5E88ukXkr1maw";
+const NGROK_AUTHTOKEN = "PASTE_YOUR_NGROK_AUTHTOKEN_HERE";
 
 //  ██████████████████████████████████████████████████████████
 //  ██   STEP 2: Run:  npm install                          ██
