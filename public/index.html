@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content"/>
+<title>NexChat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="authScreen" class="auth-screen">
+  <div class="auth-bg">
+    <div class="auth-blob b1"></div>
+    <div class="auth-blob b2"></div>
+    <div class="auth-blob b3"></div>
+  </div>
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="logo-icon">💬</div>
+      <h1 class="logo-text">NexChat</h1>
+      <p class="logo-sub">Connect. Privately. Forever.</p>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login">Sign In</button>
+      <button class="auth-tab" data-tab="register">Create Account</button>
+    </div>
+    <!-- Login -->
+    <div id="loginForm" class="auth-form">
+      <div class="field-group">
+        <label>Username</label>
+        <input type="text" id="loginUsername" placeholder="your_username" autocomplete="username"/>
+      </div>
+      <div class="field-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password"/>
+      </div>
+      <div id="loginError" class="auth-error"></div>
+      <button class="btn-primary" id="loginBtn">Sign In →</button>
+    </div>
+    <!-- Register -->
+    <div id="registerForm" class="auth-form hidden">
+      <div class="fields-row">
+        <div class="field-group">
+          <label>Username</label>
+          <input type="text" id="regUsername" placeholder="username"/>
+        </div>
+        <div class="field-group">
+          <label>Display Name</label>
+          <input type="text" id="regDisplayName" placeholder="Your Name"/>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Phone (optional)</label>
+        <input type="tel" id="regPhone" placeholder="+91 9876543210"/>
+      </div>
+      <div class="field-group">
+        <label>Password</label>
+        <input type="password" id="regPassword" placeholder="Create password"/>
+      </div>
+      <div class="field-group">
+        <label>Bio (optional)</label>
+        <input type="text" id="regBio" placeholder="Hey there! I'm using NexChat"/>
+      </div>
+      <div id="regError" class="auth-error"></div>
+      <button class="btn-primary" id="registerBtn">Create Account →</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="appScreen" class="app-screen hidden">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="my-avatar-wrap" id="openProfile">
+        <img id="myAvatarSidebar" src="/icons/default-avatar.svg" class="my-avatar" alt="me"/>
+        <div class="online-dot"></div>
+      </div>
+      <div class="sidebar-title">NexChat</div>
+      <div class="sidebar-actions">
+        <button class="icon-btn" id="newChatBtn" title="New Chat">✏️</button>
+        <button class="icon-btn" id="menuBtn" title="Menu">⋮</button>
+      </div>
+    </div>
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search or start new chat"/>
+    </div>
+    <div class="chat-list" id="chatList"></div>
+  </div>
+
+  <!-- CHAT AREA -->
+  <div class="chat-area" id="chatArea">
+    <!-- Welcome screen -->
+    <div class="welcome-screen" id="welcomeScreen">
+      <div class="welcome-icon">💬</div>
+      <h2>NexChat</h2>
+      <p>Select a contact to start chatting</p>
+      <div class="links-panel" id="linksPanel">
+        <div class="link-row">
+          <span class="link-label">📡 Local IP</span>
+          <span class="link-val" id="localIPLink">Loading...</span>
+          <button class="copy-btn" onclick="copyLink('localIPLink')">Copy</button>
+        </div>
+        <div class="link-row">
+          <span class="link-label">🌐 Ngrok</span>
+          <span class="link-val" id="ngrokLink">Loading...</span>
+          <button class="copy-btn" onclick="copyLink('ngrokLink')">Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Chat -->
+    <div class="chat-view hidden" id="chatView">
+      <div class="chat-header" id="chatHeader">
+        <button class="back-btn" id="backBtn">‹</button>
+        <div class="chat-header-avatar-wrap">
+          <img class="chat-header-avatar" id="peerAvatar" src="/icons/default-avatar.svg" alt=""/>
+          <div class="chat-header-status" id="peerStatusDot"></div>
+        </div>
+        <div class="chat-header-info">
+          <div class="chat-header-name" id="peerName">Contact</div>
+          <div class="chat-header-sub" id="peerStatus">last seen recently</div>
+        </div>
+        <div class="chat-header-actions">
+          <button class="icon-btn" id="infoBtn" title="Contact Info">ℹ️</button>
+        </div>
+      </div>
+
+      <div class="messages-area" id="messagesArea">
+        <div class="messages-list" id="messagesList"></div>
+      </div>
+
+      <!-- Reply Preview -->
+      <div class="reply-preview hidden" id="replyPreview">
+        <div class="reply-bar"></div>
+        <div class="reply-content">
+          <div class="reply-name" id="replyName"></div>
+          <div class="reply-text" id="replyText"></div>
+        </div>
+        <button class="reply-close" id="cancelReply">✕</button>
+      </div>
+
+      <div class="input-area">
+        <button class="emoji-open-btn" id="emojiOpenBtn">😊</button>
+        <button class="attach-btn" id="attachBtn">📎</button>
+        <input type="file" id="fileInput" multiple accept="image/*,video/*,.pdf,.doc,.docx,.zip" style="display:none"/>
+        <div class="msg-input-wrap">
+          <div class="msg-input" id="msgInput" contenteditable="true" data-placeholder="Message..." role="textbox"></div>
+        </div>
+        <button class="send-btn" id="sendBtn">➤</button>
+      </div>
+
+      <!-- Emoji Picker -->
+      <div class="emoji-picker hidden" id="emojiPicker">
+        <div class="emoji-categories" id="emojiCats"></div>
+        <div class="emoji-grid" id="emojiGrid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE PANEL -->
+<div class="panel-overlay hidden" id="profileOverlay"></div>
+<div class="profile-panel hidden" id="profilePanel">
+  <div class="panel-header">
+    <button class="panel-close" id="closeProfile">✕</button>
+    <h2>Profile</h2>
+  </div>
+  <div class="profile-avatar-section">
+    <div class="profile-avatar-wrap">
+      <img id="profileAvatar" src="/icons/default-avatar.svg" class="profile-avatar" alt="avatar"/>
+      <label class="avatar-edit-btn" for="avatarInput">✏️</label>
+      <input type="file" id="avatarInput" accept="image/*" style="display:none"/>
+    </div>
+    <div class="profile-name-edit">
+      <input type="text" id="profileDisplayName" class="editable-field" placeholder="Display Name"/>
+    </div>
+    <div class="profile-bio-edit">
+      <input type="text" id="profileBio" class="editable-field bio-field" placeholder="Bio"/>
+    </div>
+    <div class="profile-phone-edit">
+      <input type="tel" id="profilePhone" class="editable-field" placeholder="Phone number"/>
+    </div>
+  </div>
+  <button class="btn-primary" id="saveProfile">Save Profile</button>
+  <div class="divider"></div>
+  <h3>Change Password</h3>
+  <div class="field-group">
+    <label>Current Password</label>
+    <input type="password" id="oldPass" placeholder="Current password"/>
+  </div>
+  <div class="field-group">
+    <label>New Password</label>
+    <input type="password" id="newPass" placeholder="New password"/>
+  </div>
+  <button class="btn-secondary" id="savePass">Update Password</button>
+  <div class="divider"></div>
+  <h3>Favourite Reactions</h3>
+  <p class="hint">These appear first when you react to a message.</p>
+  <div class="fav-reactions-edit" id="favReactionsEdit"></div>
+  <div class="divider"></div>
+  <button class="btn-danger" id="logoutBtn">Sign Out</button>
+</div>
+
+<!-- CONTACT INFO PANEL -->
+<div class="contact-panel hidden" id="contactPanel">
+  <div class="panel-header">
+    <button class="panel-close" id="closeContact">✕</button>
+    <h2>Contact Info</h2>
+  </div>
+  <div class="contact-info-body" id="contactInfoBody"></div>
+</div>
+
+<!-- NEW CHAT MODAL -->
+<div class="modal-overlay hidden" id="newChatOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>New Chat</h3>
+      <button class="modal-close" id="closeNewChat">✕</button>
+    </div>
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="newChatSearch" placeholder="Search by name or phone..."/>
+    </div>
+    <div class="modal-results" id="newChatResults"></div>
+  </div>
+</div>
+
+<!-- CONTEXT MENU -->
+<div class="context-menu hidden" id="contextMenu">
+  <div class="ctx-reactions" id="ctxReactions"></div>
+  <button class="ctx-item" data-action="reply">↩ Reply</button>
+  <button class="ctx-item" data-action="copy">📋 Copy</button>
+  <button class="ctx-item" data-action="edit">✏️ Edit</button>
+  <button class="ctx-item" data-action="info">ℹ️ Info</button>
+  <button class="ctx-item ctx-delete" data-action="delete">🗑 Delete</button>
+</div>
+
+<!-- MESSAGE INFO MODAL -->
+<div class="modal-overlay hidden" id="msgInfoOverlay">
+  <div class="modal msg-info-modal">
+    <div class="modal-header">
+      <h3>Message Info</h3>
+      <button class="modal-close" id="closeMsgInfo">✕</button>
+    </div>
+    <div id="msgInfoBody"></div>
+  </div>
+</div>
+
+<!-- EDIT MESSAGE MODAL -->
+<div class="modal-overlay hidden" id="editMsgOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Edit Message</h3>
+      <button class="modal-close" id="closeEditMsg">✕</button>
+    </div>
+    <textarea id="editMsgInput" rows="4" placeholder="Edit your message..."></textarea>
+    <button class="btn-primary" id="confirmEdit">Save Changes</button>
+  </div>
+</div>
+
+<!-- REACTION PICKER MODAL (custom fav) -->
+<div class="modal-overlay hidden" id="reactionPickerOverlay">
+  <div class="modal reaction-picker-modal">
+    <div class="modal-header">
+      <h3>Choose Reaction</h3>
+      <button class="modal-close" id="closeReactionPicker">✕</button>
+    </div>
+    <p class="hint">All emojis — tap to react</p>
+    <div class="emoji-grid big" id="fullEmojiGrid"></div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="emojis.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
